@@ -1,0 +1,53 @@
+header a {
+  color: #ffffff;
+  font-size: 1rem !important;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+header a:hover {
+  color: #d3d3d3;
+}
+
+.nav-menu li {
+  display: block;
+}
+
+@media (max-width: 767px) {
+  .nav-menu > li {
+    float: none;
+  }
+}
+
+/* Hide the navigation menu and other elements on small devices */
+@media (max-width: 768px) {
+  .nav-menu,
+  .commerce-section {
+    display: none;
+  }
+  .hamburger-icon {
+    display: block;
+    position: absolute;
+    right: 20px;
+  }
+
+  .mobile-background {
+    background: #0250a3;
+  }
+}
+
+/* Display the navigation menu and other elements on larger devices */
+@media (min-width: 769px) {
+  .nav-menu {
+    display: block! important;
+  }
+  .commerce-section {
+    display: flex! important;
+  }
+  .hamburger-icon {
+    display: none! important;
+  }
+  .mobile-background {
+    background: none! important;
+  }
+}

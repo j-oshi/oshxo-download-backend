@@ -1,0 +1,32 @@
+{% set title = paragraph.field_title.value %}
+{% set content = paragraph.field_content.processed|raw %}
+{% set media_entity = paragraph.field_image.entity %}
+{% if media_entity %}
+	{# Fetch the image file entity from the media entity #}
+	{% set image_file = media_entity.field_media_image.entity %}
+	{% if image_file %}
+		{# Get the URL and alt text of the image #}
+		{% set image_url = file_url(image_file.uri.value) %}
+		{% set image_alt = media_entity.field_media_image.alt %}
+	{% endif %}
+{% endif %}
+
+<section class="section-gap info-area" id="about">
+	<div class="container">
+		<div class="single-info row mt-40 align-items-center">
+			{% if image_url and image_alt %}
+				<div class="col-lg-6 col-md-12 text-center no-padding info-left">
+					<div class="info-thumb">
+						<img src="{{ image_url }}" class="img-fluid info-img" alt="{{ image_alt }}"/>
+					</div>
+				</div>
+			{% endif %}
+			<div class="col-lg-6 col-md-12 no-padding info-rigth">
+				<div class="info-content">
+					<h2 class="pb-10">{{ title }}</h2>
+					{{ content }}
+				</div>
+			</div>
+		</div>
+	</div>
+</section>

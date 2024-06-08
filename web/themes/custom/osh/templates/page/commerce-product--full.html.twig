@@ -1,0 +1,95 @@
+{{ attach_library('osh/product_profile') }}
+
+{% set title = elements['#title']|default|striptags|replace({"\n": "", "\r": "", "\t": ""}) %}
+{% set product_price = product.variation_price[0]["#markup"]|default %}
+{% set product_content = product.body[0]["#text"]|default %}
+{% set current_url = path('<current>') %}
+{% set current_url_path_list = current_url|split('/') %}
+
+{% set slide_images = [] %}
+{% if product.field_image|length > 0 %}
+	{% for key, value in product.field_image %}
+		{% if key matches '/^\\d+$/' %}
+			{% set media = value['#media'] %}
+			{% set image_uri = media.field_media_image.entity.uri.value %}
+			{% set image_url = file_url(image_uri) %}
+			{% set slide_images = slide_images|merge([image_url]) %}
+		{% endif %}
+	{% endfor %}
+{% endif %}
+
+<section class="banner-area" id="home">
+	<div class="container">
+		<div class="row d-flex align-items-center justify-content-start">
+			<div class="banner-content col-lg">
+				{% if title %}
+					<h1 class="text-uppercase pt-40 pb-20">{{ title }}</h1>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+</section>
+
+<div class="super_container container_height" style="background-color: #e5e5e5;">
+	<div class="container" style=" background-color: #fff;">
+		<div class="row">
+			<div class="single_product">
+				{% if current_url_path_list[1] == "product" %}
+					{% set product_list_url = '/products' %}
+					<div class="back-to-results">
+						<span>
+							‹
+						</span>
+						<a href="{{ product_list_url }}">Back to Products</a>
+					</div>
+				{% endif %}
+				<div class="container-fluid" style=" background-color: #fff; padding: 11px;">
+					<div class="row">
+						{% if slide_images|length > 0%}
+							{% include '@osh/components/organisms/vertical_thumbnail_carousel.twig' with {
+					'image_selected_src': slide_images[0],
+					'slide_images': slide_images,
+					}  %}
+						{% endif %}
+
+						<div class="col-lg-6 order-3">
+							<div class="product_description">
+								<nav>
+									<ol class="breadcrumb">
+										<li class="breadcrumb-item">
+											<a href="{{ url('<front>') }}">Home</a>
+										</li>
+										{% if current_url_path_list[1] == "product" %}
+											{% set product_list_url = '/products' %}
+											<li class="breadcrumb-item">
+												<a href="{{ product_list_url }}">Products</a>
+											</li>
+										{% endif %}
+										<li class="breadcrumb-item active">{{ title }}</li>
+									</ol>
+								</nav>
+								{% if title %}
+									<div class="product_name">{{ title }}</div>
+								{% endif %}
+
+								<div>
+									{% if product_price %}
+										<span class="product_price">{{ product_price }}</span>
+									{% endif %}
+								</div>
+								<div>
+									<hr class="singleline">
+									<div>
+										{{ product_content|raw }}
+										<hr class="singleline">
+										{{ product.variations }}
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

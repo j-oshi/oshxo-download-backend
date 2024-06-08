@@ -1,0 +1,38 @@
+name: Oshtheme
+type: theme
+description: Custom theme produced by Osh Solutions
+core_version_requirement: ^10
+base theme: stable9
+starterkit: true
+generator: 'starterkit_theme:10.2.6'
+
+regions:
+  header: 'Header'
+  content: 'Content'
+  footer: 'Footer'
+  page_top: 'Page top'
+  page_bottom: 'Page bottom'
+  hidden: 'HIDDEN'
+
+version: VERSION
+libraries:
+  - osh/base
+  - osh/messages
+  - core/normalize
+libraries-extend:
+  user/drupal.user:
+    - osh/user
+  core/drupal.dropbutton:
+    - osh/dropbutton
+  core/drupal.dialog:
+    - osh/dialog
+  file/drupal.file:
+    - osh/file
+  core/drupal.progress:
+    - osh/progress
+
+components:
+  namespaces:
+    osh:
+      - overrides
+

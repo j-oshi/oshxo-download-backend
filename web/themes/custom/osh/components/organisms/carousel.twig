@@ -1,0 +1,31 @@
+{{ attach_library('osh/carousel') }}
+
+<section class="slider-area pt-100">
+	<div class="container">
+		<div class="row d-flex justify-content-center">
+			<div class="menu-content pb-60 col-lg-8">
+				<div class="title text-center">
+					<h2 class="mb-10">{{ title }}</h2>
+					<p>{{ content }}</p>
+				</div>
+			</div>
+		</div>
+		{% if slides|length > 0 %}
+		<div class="row">
+			<div class="active-slider-carousel mb-60">
+				{% for slide in slides %}
+				<div class="single-slider item">
+					<img class="mx-auto" src="{{ slide.url }}" alt="{{ slide.alt }}">
+					{% if slide.title %}
+						<h4>{{ slide.title }}</h4>
+					{% endif %}
+					{% if slide.content %}
+						{{ slide.content|striptags }}
+					{% endif %}
+				</div>
+				{% endfor %}
+			</div>
+		</div>
+		{% endif %}
+	</div>
+</section>

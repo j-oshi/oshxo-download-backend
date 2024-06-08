@@ -1,0 +1,22 @@
+<section class="banner-area" id="home">
+  <div class="container">
+    <div class="row double-gap fullscreen d-flex align-items-center justify-content-start">
+      <div class="banner-content col-lg-5 pr-lg-1">
+        {% if hero_title %}
+            <h1 class="text-uppercase">{{ hero_title }}</h1>
+        {% endif %}
+        {% if hero_text %}
+            <p class="text-white pt-20 pb-20">{{ hero_text }}</p>
+        {% endif %}
+        {% if hero_link_button_title and hero_link_button_uri %}
+          <a href="{{ hero_link_button_uri }}" class="primary-btn text-uppercase">{{ hero_link_button_title }}</a>
+        {% endif %}
+      </div>
+      {% if hero_image_url and hero_image_alt %}
+        <div class="col-lg-7 banner-right">
+          <img class="img-fluid" src="{{ hero_image_url }}" alt="{{ hero_image_alt }}" />
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>

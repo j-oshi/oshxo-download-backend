@@ -1,0 +1,30 @@
+{# Website header #}
+{{ attach_library('osh/header') }}
+{# {{ dump() }} #}
+{% block header %}
+	<header id="header">
+		<div class="container">
+			<div class="row mobile-background align-items-center justify-content-between d-flex flex-column flex-md-row">
+				<div id="logo">
+					<a href="{{ path('<front>') }}"><img src="{{ base_path ~ directory }}/img/logo.png" alt="{{ site_name }}" title="{{ site_name }}"/></a>
+				</div>
+				<div class="hamburger-icon">
+					<i class="fa fa-bars"></i>
+				</div>
+				<nav id="nav-menu-container p-2">
+					<ul class="nav-menu text-center">
+						{% for link in links %}
+							<li>
+								<a href="{{ link.url }}">{{ link.title }}</a>
+							</li>
+						{% endfor %}
+					</ul>
+				</nav>
+				<div class="commerce-section mt-3">
+				{{ cart }}
+				{{ elements.osh_useraccountmenu }}
+				</div>
+			</div>
+		</div>
+	</header>
+{% endblock header %}

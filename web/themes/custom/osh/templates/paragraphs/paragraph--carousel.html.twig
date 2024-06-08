@@ -1,0 +1,8 @@
+{% set title = paragraph.field_title.value %}
+{% set content = paragraph.field_content.processed|raw %}
+
+{% include '@osh/components/organisms/carousel.twig' with {
+    'title': title,
+    'content': content,
+    'slides': item_for_carousel
+} %}

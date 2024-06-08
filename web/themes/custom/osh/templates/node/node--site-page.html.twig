@@ -1,0 +1,84 @@
+{# Initialize variables with default values #}
+{% if is_front %}
+
+	{% set front_page = false %}
+	{% set hero_title = '' %}
+	{% set hero_text = '' %}
+	{% set image_url = '' %}
+	{% set image_alt = '' %}
+	{% set hero_link_button_title = '' %}
+	{% set hero_link_button_uri = '' %}
+	{% set hero_source_type = node.field_select_hero.value %}
+	{% if product_list|length > 0 %}
+		{% set product = product_list[0] %}
+	{% endif %}
+
+	{% if hero_source_type and node.field_title %}
+		{% set hero_title = node.field_title.value %}
+	{% else %}
+		{% set hero_title = product.title %}
+	{% endif %}
+
+	{% if node.body.value %}
+		{% set hero_text = node.body.value|striptags %}
+	{% endif %}
+
+	{# Check if the banner media field exists and has a value #}
+	{% set media_entity = node.field_banner_media.entity %}
+	{% if media_entity %}
+		{# Fetch the image file entity from the media entity #}
+		{% set image_file = media_entity.field_media_image.entity %}
+		{% if image_file %}
+			{# Get the URL and alt text of the image #}
+			{% set image_url = file_url(image_file.uri.value) %}
+			{% set image_alt = media_entity.field_media_image.alt %}
+		{% endif %}
+	{% endif %}
+
+	{% if hero_source_type == false %}
+		{% set image_url = product.image_url %}
+	{% endif %}
+
+	{# Check if the link button field exists and has a value #}
+	{% if node.field_link_button %}
+		{% set hero_link_button_title = node.field_link_button.title %}
+		{% set hero_link_button_uri = node.field_link_button.get(0).getUrl().toString() %}
+	{% endif %}
+
+	{% if hero_source_type == false %}
+		{% set hero_link_button_title = 'Testing 2' %}
+		{% set hero_link_button_uri = product.url %}
+	{% endif %}
+
+	{# Include the hero component with the set variables #}
+	{% include '@osh/components/organisms/hero.twig' with {
+        'hero_title': hero_title,
+        'hero_text': hero_text,
+        'hero_image_url': image_url,
+        'hero_image_alt': image_alt,
+        'hero_link_button_title': hero_link_button_title,
+        'hero_link_button_uri': hero_link_button_uri,
+    } %}
+
+	{# Render the paragraphs field #}
+	{% if content.field_components %}
+		<section class="paragraphs-content">
+			{{ content.field_components }}
+		</section>
+	{% endif %}
+{% else %}
+    {% set title = elements['#title'] %}
+    <section class="banner-area" id="home">
+      <div class="container">
+        <div
+          class="row d-flex align-items-center justify-content-start"
+        >
+          <div class="banner-content col-lg">
+            {% if title %}
+                <h1 class="text-uppercase pt-50 pb-20">{{ title|striptags|replace({"\n": "", "\r": "", "\t": ""}) }}</h1>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </section>
+{% endif %}

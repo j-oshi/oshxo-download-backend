@@ -1,0 +1,362 @@
+<?php
+
+use Drupal\file\Entity\File;
+use Drupal\media\Entity\Media;
+use Drupal\paragraphs\Entity\Paragraph;
+use Drupal\Core\Menu\MenuTreeParameters;
+use Drupal\node\Entity\Node;
+use Drupal\commerce_product\Entity\Product;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
+
+/**
+ * Allow is_front to be used on other templates
+ */
+function osh_preprocess(&$variables, $hook) {
+  $pathMatcher = \Drupal::service('path.matcher');
+  try {
+    $variables['is_front'] = $pathMatcher->isFrontPage();
+  } catch (Exception $e) {
+    $variables['is_front'] = FALSE;
+  }
+
+  if ($variables['is_front']) {
+    $variables['body_class'] = 'home';
+  }
+  $variables['#cache']['contexts'][] = 'url.path.is_front';
+  $variables['base_path'] = base_path();
+  $theme_path = $variables['base_path'] . $variables['directory'];
+  $variables['assets_dir'] = $theme_path . "/assets/";
+  $variables['site_name'] = \Drupal::config('system.site')->get('name');
+  $variables['menu_list'] = menu_list('oshmenu');
+
+  // Get the request stack service.
+  $request_stack = \Drupal::service('request_stack');
+  // Get the current request.
+  $current_request = $request_stack->getCurrentRequest();
+  // Get the referer from the headers.
+  $referer = $current_request->headers->get('referer', '/');
+  // Pass the referer to the template variables.
+  $variables['referer'] = $referer;
+
+  if (!isset($variables['node'])) {
+    return;
+  }
+
+  $node = $variables['node'];
+  if (isset($node->field_product_list) && !$node->field_product_list->isEmpty()) {
+    $products = [];
+    foreach ($node->field_product_list->referencedEntities() as $product) {
+      $image_entity = $product->get('field_image')->entity;
+      if ($image_entity) {
+        $image_file = File::load($image_entity->id());
+        if ($image_file) {
+          $image_url = \Drupal::service('file_url_generator')->generateAbsoluteString($image_file->getFileUri());
+          $products[] = [
+            'title' => $product->label(),
+            'url' => $product->toUrl()->toString(),
+            'image_url' => $image_url,
+          ];
+        }
+      }
+    }
+    $variables['product_list'] = $products;
+  }
+}
+
+function menu_list($menu_name) {
+  $menu_tree_parameters = new MenuTreeParameters();
+  $menu_tree = \Drupal::menuTree()->load($menu_name, $menu_tree_parameters);
+
+  $menu_manipulators = [
+    ['callable' => 'menu.default_tree_manipulators:checkAccess'],
+    ['callable' => 'menu.default_tree_manipulators:generateIndexAndSort'],
+  ];
+  $menu_tree = \Drupal::menuTree()->transform($menu_tree, $menu_manipulators);
+
+  $menu_service = \Drupal::menuTree();
+  $tree = $menu_service->build($menu_tree);
+
+  $menu_items = [];
+  foreach ($tree['#items'] as $item) {
+    $menu_items[] = [
+      'title' => $item['title'],
+      'url' => $item['url']->toString(),
+    ];
+  }
+
+  return $menu_items;
+}
+
+function osh_preprocess_paragraph(&$variables) {
+  $paragraph = $variables['paragraph'];
+
+  if ($paragraph->getType() === 'carousel' && !$paragraph->field_slider->isEmpty()) {
+    $variables['item_for_carousel'] = [];
+    foreach ($paragraph->field_slider as $key => $item) {
+      $paragraph_item = Paragraph::load($item->target_id);
+      $variables['item_for_carousel'][$key] = [
+        'title' => $paragraph_item->field_title->value,
+        'content' => $paragraph_item->field_content->value,
+        'alt' => '',
+        'url' => '',
+      ];
+      $media = Media::load($paragraph_item->field_image->target_id);
+      if ($media) {
+        $fid = $media->field_media_image[0]->getValue()['target_id'];
+        $file = File::load($fid);
+        if ($file) {
+          $variables['item_for_carousel'][$key]['alt'] = $media->field_media_image[0]->getValue()['alt'];
+          $variables['item_for_carousel'][$key]['url'] = $file->createFileUrl();
+        }
+      }
+    }
+  }
+}
+
+function osh_preprocess_image_widget(array &$variables) {
+  $data = &$variables['data'];
+
+  if (isset($data['preview']['#access']) && $data['preview']['#access'] === FALSE) {
+    unset($data['preview']);
+  }
+}
+
+function osh_theme_suggestions_views_view_unformatted_alter(array &$suggestions, array $variables) {
+  if ($variables['view']->id() == 'product_catalog') {
+    $suggestions[] = 'views_view_unformatted__product_catalog';
+  }
+}
+
+function osh_preprocess_views_view_unformatted(&$variables) {
+  if ($variables['view']->id() == 'product_catalog') {
+    foreach ($variables['rows'] as $id => &$row) {
+      $result_row = $row['content']['#row'];
+      $row['product_data'] = [
+        'field_image' => [],
+        'variations' => [],
+        'name' => [],
+      ];
+
+      $product = $result_row->_entity;
+      if ($product instanceof Product) {
+        $row['product_url'] = $product->toUrl()->toString();
+      }
+
+      if (!$product->get('field_image')->isEmpty()) {
+        $image_entity = $product->get('field_image')->entity;
+        if ($image_entity) {
+          $image_file = File::load($image_entity->id());
+          if ($image_file) {
+            $image_url = \Drupal::service('file_url_generator')->generateAbsoluteString($image_file->getFileUri());
+            $row['product_data']['field_image'] = [
+              'url' => $image_url,
+              'alt' => $image_entity->get('field_media_image')->alt,
+            ];
+          }
+        }
+      }
+
+      if (!$product->get('title')->isEmpty()) {
+        $row['product_data']['name'] = $product->get('title')->value;
+      }
+
+      if (!$product->get('variations')->isEmpty()) {
+        foreach ($product->get('variations') as $variation_ref) {
+          $variation = $variation_ref->entity;
+          if ($variation) {
+            $row['product_data']['variations'][] = $variation->get('price')->number;
+          }
+        }
+      }
+    }
+  }
+}
+
+function osh_preprocess_page(&$variables) {
+  if ($variables['page']['#type'] == "page") {
+    $variables['custom_title'] = $variables['page']['#title'];
+    $route_name = \Drupal::routeMatch()->getRouteName();
+    if ($route_name === 'entity.commerce_product.canonical') {
+      $current_url = \Drupal::request()->getRequestUri();
+      $path_segments = explode('/', trim($current_url, '/'));
+      $variables['is_product_page'] = (isset($path_segments[0]) && $path_segments[0] === 'product');
+    }
+  }
+}
+
+function osh_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
+  if (strpos($form_id, 'commerce_order_item_add_to_cart_form') !== FALSE) {
+    $form['actions']['submit']['#attributes']['class'][] = 'btn';
+    $form['actions']['submit']['#attributes']['class'][] = 'btn-primary';
+    $form['actions']['submit']['#weight'] = -10;
+
+    $form['actions']['go_to_cart'] = [
+      '#type' => 'submit',
+      '#value' => t('Go to cart'),
+      '#attributes' => [
+        'class' => ['btn', 'btn-success'],
+      ],
+      '#submit' => ['osh_go_to_cart_submit'],
+      '#weight' => 0,
+    ];
+  }
+
+  if (strpos($form_id, 'commerce_cart_form') !== FALSE) {
+    $form['actions']['submit']['#attributes']['class'][] = 'btn';
+    $form['actions']['submit']['#attributes']['class'][] = 'btn-primary';
+    $form['actions']['submit']['#attributes']['class'][] = 'd-none';
+    $form['actions']['submit']['#weight'] = -10;
+
+    $form['actions']['checkout']['#attributes']['class'][] = 'btn';
+    $form['actions']['checkout']['#attributes']['class'][] = 'btn-success';
+    $form['actions']['checkout']['#weight'] = 0;
+
+    $classes = ['btn', 'btn-danger', 'btn-sm'];
+    foreach ($form['remove_button'] as $key => &$button) {
+      if (is_array($button)) {
+        foreach ($classes as $class) {
+          $button['#attributes']['class'][] = $class;
+        }
+      }
+    }
+  }
+
+  if (strpos($form_id, 'commerce_checkout_flow_multistep') !== FALSE) {
+    $form['actions']['next']['#attributes']['class'][] = 'btn';
+    $form['actions']['next']['#attributes']['class'][] = 'btn-success';
+    $form['actions']['next']['#attributes']['class'][] = 'mr-2';
+    $form['actions']['next']['#weight'] = -10;
+
+    $form['sidebar']['coupon_redemption']['form']['apply']['#attributes']['class'][] = 'btn';
+    $form['sidebar']['coupon_redemption']['form']['apply']['#attributes']['class'][] = 'btn-primary';
+    $form['sidebar']['coupon_redemption']['form']['apply']['#attributes']['class'][] = 'ml-0';
+
+    $fieldsets_to_wrap = [
+      'contact_information' => 'edit-contact-information',
+      'payment_information' => 'edit-payment-information',
+    ];
+
+    foreach ($fieldsets_to_wrap as $fieldset_name => $fieldset_id) {
+      if (isset($form[$fieldset_name])) {
+        // Wrap the fieldset in a white container.
+        $form[$fieldset_name] = [
+          '#type' => 'container',
+          '#attributes' => ['class' => ['px-4', 'py-2', 'bg-white', 'mb-3']],
+          'fieldset' => $form[$fieldset_name],
+        ];
+      }
+    }
+
+    $form['contact_information']['fieldset']['email']['#attributes']['class'][] = 'form-control';
+    $form['contact_information']['fieldset']['email_confirm']['#attributes']['class'][] = 'form-control';
+
+    // if (isset($form['payment_information']['fieldset']['billing_information']['address'])) {
+    //   $address_fields = &$form['payment_information']['fieldset']['billing_information']['address']['#attributes']['class'];
+    //   // dump($address_fields);
+    //   foreach ($address_fields as $field_name => &$field) {
+    //     $field = 'form-control';
+    //   }
+    // }
+    
+    // Check and wrap 'order_summary' in 'sidebar' if it exists
+    if (isset($form['sidebar']['order_summary'])) {
+      $form['sidebar']['order_summary'] = [
+        '#type' => 'container',
+        '#attributes' => ['class' => ['p-4', 'bg-white', 'mb-3']],
+        'content' => $form['sidebar']['order_summary'],
+      ];
+    }
+
+
+    $form['sidebar']['coupon_redemption']['form']['code']['#attributes']['class'][] = 'form-control';
+    if (isset($form['sidebar']['coupon_redemption'])) {
+      $form['sidebar']['coupon_redemption'] = [
+        '#type' => 'container',
+        '#attributes' => ['class' => ['p-4', 'py-2', 'bg-white', 'mb-3']],
+        'content' => $form['sidebar']['coupon_redemption'],
+      ];
+    }
+
+    if (isset($form['actions'])) {
+      $form['actions'] = [
+        '#type' => 'container',
+        '#attributes' => ['class' => ['px-4', 'py-2', 'bg-white', 'mb-3']],
+        'content' => $form['actions'],
+        '#weight' => 100,
+      ];
+    }
+  }
+
+  if (strpos($form_id, 'user_login_form') !== FALSE) {
+    $form['name']['#attributes']['class'][] = 'form-control';
+    $form['name']['#attributes']['#weight'] = -50;
+    $form['pass']['#attributes']['class'][] = 'form-control';
+    $form['pass']['#attributes']['#weight'] = -40;
+    $form['actions']['submit']['#attributes']['class'][] = 'btn';
+    $form['actions']['submit']['#attributes']['class'][] = 'btn-primary';
+    $form['actions']['submit']['#weight'] = -30;
+
+    if (!isset($form['actions'])) {
+      $form['actions'] = [
+        '#type' => 'actions',
+        '#weight' => -20,
+      ];
+    }
+
+    $form['osh_additional_links'] = [
+      '#type' => 'container',
+      '#attributes' => ['class' => ['osh-additional-links', 'd-flex', 'd-flex justify-content-center']],
+      'create_account' => [
+        '#type' => 'link',
+        '#title' => t('Create new account'),
+        '#url' => \Drupal\Core\Url::fromRoute('user.register'),
+        '#attributes' => ['class' => ['create-account-link']],
+        '#weight' => 10,
+      ],
+      'forgot_password' => [
+        '#type' => 'link',
+        '#title' => t('Forgot password'),
+        '#url' => \Drupal\Core\Url::fromRoute('user.pass'),
+        '#attributes' => ['class' => ['forgot-password-link ml-3']],
+        '#weight' => 20,
+      ],
+      '#weight' => 30,
+    ];
+  }
+
+  if (strpos($form_id, 'user_pass') !== FALSE || strpos($form_id, 'user_register_form') !== FALSE) {
+    $form['name']['#attributes']['class'][] = 'form-control';
+    $form['actions']['submit']['#attributes']['class'][] = 'btn';
+    $form['actions']['submit']['#attributes']['class'][] = 'btn-primary';
+    $form['account']['mail']['#attributes']['class'][] = 'form-control';
+    $form['account']['mail']['#attributes']['class'][] = 'mb-2';
+    $form['account']['name']['#attributes']['class'][] = 'form-control';
+    $form['account']['name']['#attributes']['class'][] = 'mb-2';
+  }
+}
+
+function osh_go_to_cart_submit(array &$form, \Drupal\Core\Form\FormStateInterface $form_state) {
+  $form_state->setRedirect('commerce_cart.page');
+}
+
+function osh_theme_suggestions_views_view_alter(array &$suggestions, array $variables) {
+  $view = $variables['view'];
+  $suggestions[] = sprintf('views_view__%s', $view->id());
+  $suggestions[] = sprintf('views_view__%s__%s', $view->id(), $view->getDisplay()->display['id']);
+}
+
+function osh_theme_suggestions_views_view_table_alter(array &$suggestions, array $variables) {
+  $suggestions[] = 'views_view_table__' . $variables['view']->id();
+}
+
+/**
+ * Implementation of hook_theme_suggestions_hook().
+ */
+function MY_THEME_theme_suggestions_block_alter(&$suggestions, $variables) {
+  if (isset($variables['elements']['content']['#block_content'])) {
+    $bundle = $variables['elements']['content']['#block_content']->bundle();
+    array_splice($suggestions, 1, 0, 'block__' . $bundle);
+  }
+}
+

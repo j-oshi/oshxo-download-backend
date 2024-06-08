@@ -1,0 +1,161 @@
+base:
+  version: VERSION
+  css:
+    component:
+      css/components/action-links.css:
+        weight: -10
+      css/components/breadcrumb.css:
+        weight: -10
+      css/components/button.css:
+        weight: -10
+      css/components/container-inline.css:
+        weight: -10
+      css/components/details.css:
+        weight: -10
+      css/components/exposed-filters.css:
+        weight: -10
+      css/components/field.css:
+        weight: -10
+      css/components/form.css:
+        weight: -10
+      css/components/icons.css:
+        weight: -10
+      css/components/inline-form.css:
+        weight: -10
+      css/components/item-list.css:
+        weight: -10
+      css/components/link.css:
+        weight: -10
+      css/components/links.css:
+        weight: -10
+      css/components/menu.css:
+        weight: -10
+      css/components/more-link.css:
+        weight: -10
+      css/components/pager.css:
+        weight: -10
+      css/components/tabledrag.css:
+        weight: -10
+      css/components/tableselect.css:
+        weight: -10
+      css/components/tablesort.css:
+        weight: -10
+      css/components/tabs.css:
+        weight: -10
+      css/components/textarea.css:
+        weight: -10
+      css/components/ui-dialog.css:
+        weight: -10
+    theme:
+      # css/theme/print.css: { media: print }
+      css/theme/main.css: {}
+      css/theme/animate.min.css: {}
+      css/theme/bootstrap.css: {}
+      css/theme/font-awesome.min.css: {}
+      css/theme/jquery.DonutWidget.min.css: {}
+      css/theme/jquerysctipttop.css: {}
+      css/theme/linearicons.css: {}
+      css/theme/magnific-popup.css: {}
+      css/theme/nice-select.css: {}
+dialog:
+  version: VERSION
+  css:
+    component:
+      css/components/dialog.css:
+        weight: -10
+dropbutton:
+  version: VERSION
+  css:
+    component:
+      css/components/dropbutton.css:
+        weight: -10
+file:
+  version: VERSION
+  css:
+    component:
+      css/components/file.css:
+        weight: -10
+image-widget:
+  version: VERSION
+  css:
+    component:
+      css/components/image-widget.css: {}
+indented:
+  version: VERSION
+  css:
+    component:
+      css/components/indented.css: {}
+messages:
+  version: VERSION
+  css:
+    component:
+      css/components/messages.css:
+        weight: -10
+node:
+  version: VERSION
+  css:
+    component:
+      css/components/node.css:
+        weight: -10
+progress:
+  version: VERSION
+  css:
+    component:
+      css/components/progress.css:
+        weight: -10
+search-results:
+  version: VERSION
+  css:
+    component:
+      css/components/search-results.css: {}
+user:
+  version: VERSION
+  css:
+    component:
+      css/components/user.css:
+        weight: -10
+
+carousel:
+  css:
+    theme:
+      css/theme/owl.carousel.css: {}
+  #     css/font-awesome.min.css: {}
+  #     css/linearicons.css: {}
+  js:
+    js/vendor/jquery-2.2.4.min.js: {}
+    js/owl.carousel.min.js: { dependencies: [osh/carousel, osh/vendor_jquery] }
+    js/jquery.ajaxchimp.min.js: {}
+    js/jquery.counterup.min.js: {}
+    js/jquery.magnific-popup.min.js: {}
+    js/superfish.min.js: {}
+    js/main.js: {}
+  dependencies:
+    - osh/vendor_jquery
+
+vertical_thumbnail_carousel:
+  # css:
+  #   theme:
+  #     css/theme/owl.carousel.css: {}
+  js:
+    js/vertical_thumbnail_carousel.js: {}
+
+product_list:
+  css:
+    theme:
+      css/theme/product.css: {}
+
+product_profile:
+  css:
+    theme:
+      css/theme/product-profile.css: {}
+
+vendor_jquery:
+  js:
+    js/vendor/jquery-2.2.4.min.js: {}
+
+header:
+  css:
+    theme:
+      css/theme/header.css: {}
+  js:
+    js/header.js: {}
