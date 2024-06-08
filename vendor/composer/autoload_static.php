@@ -113,6 +113,7 @@ class ComposerStaticInit707f7590d632e07d7add8405a30a9cb8
             'Seld\\Signal\\' => 12,
             'Seld\\PharUtils\\' => 15,
             'Seld\\JsonLint\\' => 14,
+            'Sainsburys\\Guzzle\\Oauth2\\' => 25,
         ),
         'R' => 
         array (
@@ -176,6 +177,10 @@ class ComposerStaticInit707f7590d632e07d7add8405a30a9cb8
             'Google\\Protobuf\\' => 16,
             'GPBMetadata\\Opentelemetry\\' => 26,
             'GPBMetadata\\Google\\Protobuf\\' => 28,
+        ),
+        'F' => 
+        array (
+            'Firebase\\JWT\\' => 13,
         ),
         'E' => 
         array (
@@ -446,6 +451,10 @@ class ComposerStaticInit707f7590d632e07d7add8405a30a9cb8
         array (
             0 => __DIR__ . '/..' . '/seld/jsonlint/src/Seld/JsonLint',
         ),
+        'Sainsburys\\Guzzle\\Oauth2\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/sainsburys/guzzle-oauth2-plugin/src',
+        ),
         'Robo\\' => 
         array (
             0 => __DIR__ . '/..' . '/consolidation/robo/src',
@@ -603,6 +612,10 @@ class ComposerStaticInit707f7590d632e07d7add8405a30a9cb8
         'GPBMetadata\\Google\\Protobuf\\' => 
         array (
             0 => __DIR__ . '/..' . '/google/protobuf/src/GPBMetadata/Google/Protobuf',
+        ),
+        'Firebase\\JWT\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/firebase/php-jwt/src',
         ),
         'Egulias\\EmailValidator\\' => 
         array (

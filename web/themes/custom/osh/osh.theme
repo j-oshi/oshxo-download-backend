@@ -334,6 +334,17 @@ function osh_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state
     $form['account']['name']['#attributes']['class'][] = 'form-control';
     $form['account']['name']['#attributes']['class'][] = 'mb-2';
   }
+
+  if (strpos($form_id, 'contact_message_feedback_form') !== FALSE) {
+    $form['name']['#attributes']['class'][] = 'form-control';
+    $form['mail']['#attributes']['class'][] = 'form-control';
+    $form['subject']['widget'][0]['value']['#attributes']['class'][] = 'form-control';
+    $form['message']['widget'][0]['value']['#attributes']['class'][] = 'form-control';
+    $form['actions']['submit']['#attributes']['class'][] = 'btn';
+    $form['actions']['submit']['#attributes']['class'][] = 'btn-primary';
+    $form['actions']['preview']['#attributes']['class'][] = 'btn';
+    $form['actions']['preview']['#attributes']['class'][] = 'btn-primary';
+  }
 }
 
 function osh_go_to_cart_submit(array &$form, \Drupal\Core\Form\FormStateInterface $form_state) {
