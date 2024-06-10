@@ -8,7 +8,9 @@ generator: 'starterkit_theme:10.2.6'
 
 regions:
   header: 'Header'
+  help: 'Help'
   content: 'Content'
+  sidebar: Sidebar
   footer: 'Footer'
   page_top: 'Page top'
   page_bottom: 'Page bottom'

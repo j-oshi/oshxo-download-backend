@@ -203,6 +203,7 @@ function osh_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state
   }
 
   if (strpos($form_id, 'commerce_cart_form') !== FALSE) {
+
     $form['actions']['submit']['#attributes']['class'][] = 'btn';
     $form['actions']['submit']['#attributes']['class'][] = 'btn-primary';
     $form['actions']['submit']['#attributes']['class'][] = 'd-none';
@@ -210,6 +211,7 @@ function osh_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state
 
     $form['actions']['checkout']['#attributes']['class'][] = 'btn';
     $form['actions']['checkout']['#attributes']['class'][] = 'btn-success';
+    $form['actions']['checkout']['#attributes']['class'][] = 'd-none';
     $form['actions']['checkout']['#weight'] = 0;
 
     $classes = ['btn', 'btn-danger', 'btn-sm'];
@@ -364,10 +366,11 @@ function osh_theme_suggestions_views_view_table_alter(array &$suggestions, array
 /**
  * Implementation of hook_theme_suggestions_hook().
  */
-function MY_THEME_theme_suggestions_block_alter(&$suggestions, $variables) {
+function osh_theme_suggestions_block_alter(&$suggestions, $variables) {
   if (isset($variables['elements']['content']['#block_content'])) {
     $bundle = $variables['elements']['content']['#block_content']->bundle();
     array_splice($suggestions, 1, 0, 'block__' . $bundle);
   }
 }
+
 

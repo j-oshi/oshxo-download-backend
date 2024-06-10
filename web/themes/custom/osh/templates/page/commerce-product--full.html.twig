@@ -43,46 +43,48 @@
 						<a href="{{ product_list_url }}">Back to Products</a>
 					</div>
 				{% endif %}
-				<div class="container-fluid" style=" background-color: #fff; padding: 11px;">
-					<div class="row">
-						{% if slide_images|length > 0%}
-							{% include '@osh/components/organisms/vertical_thumbnail_carousel.twig' with {
+				<div class="card">
+					<div class="card-body p-4">
+						<div class="row">
+							{% if slide_images|length > 0%}
+								{% include '@osh/components/organisms/vertical_thumbnail_carousel.twig' with {
 					'image_selected_src': slide_images[0],
 					'slide_images': slide_images,
 					}  %}
-						{% endif %}
+							{% endif %}
 
-						<div class="col-lg-6 order-3">
-							<div class="product_description">
-								<nav>
-									<ol class="breadcrumb">
-										<li class="breadcrumb-item">
-											<a href="{{ url('<front>') }}">Home</a>
-										</li>
-										{% if current_url_path_list[1] == "product" %}
-											{% set product_list_url = '/products' %}
+							<div class="col-lg-6 order-3">
+								<div class="product_description">
+									<nav>
+										<ol class="breadcrumb">
 											<li class="breadcrumb-item">
-												<a href="{{ product_list_url }}">Products</a>
+												<a href="{{ url('<front>') }}">Home</a>
 											</li>
-										{% endif %}
-										<li class="breadcrumb-item active">{{ title }}</li>
-									</ol>
-								</nav>
-								{% if title %}
-									<div class="product_name">{{ title }}</div>
-								{% endif %}
-
-								<div>
-									{% if product_price %}
-										<span class="product_price">{{ product_price }}</span>
+											{% if current_url_path_list[1] == "product" %}
+												{% set product_list_url = '/products' %}
+												<li class="breadcrumb-item">
+													<a href="{{ product_list_url }}">Products</a>
+												</li>
+											{% endif %}
+											<li class="breadcrumb-item active">{{ title }}</li>
+										</ol>
+									</nav>
+									{% if title %}
+										<div class="product_name">{{ title }}</div>
 									{% endif %}
-								</div>
-								<div>
-									<hr class="singleline">
+
 									<div>
-										{{ product_content|raw }}
+										{% if product_price %}
+											<span class="product_price">{{ product_price }}</span>
+										{% endif %}
+									</div>
+									<div>
 										<hr class="singleline">
-										{{ product.variations }}
+										<div>
+											{{ product_content|raw }}
+											<hr class="singleline">
+											{{ product.variations }}
+										</div>
 									</div>
 								</div>
 							</div>
