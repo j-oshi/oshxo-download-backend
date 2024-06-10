@@ -1,12 +1,12 @@
 {{ attach_library('osh/vertical_thumbnail_carousel') }}
 
-<div class="col-lg-2 order-lg-1 order-2">
+<div class="col-lg-2 col-md-4 col-sm-4 order-lg-1 order-2">
 	<ul class="image_list">
         {% for img_src in slide_images %}
 		    <li data-image="{{ img_src }}"><img src="{{ img_src }}" alt=""></li>
         {% endfor %}
 	</ul>
 </div>
-<div class="col-lg-4 order-lg-2 order-1">
+<div class="col-lg-4 col-md-8 col-sm-8 order-lg-2 order-1">
 	<div class="image_selected"><img src="{{ image_selected_src }}" alt=""></div>
 </div>
