@@ -8,6 +8,7 @@ use Drupal\node\Entity\Node;
 use Drupal\commerce_product\Entity\Product;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Drupal\image\Entity\ImageStyle;
 
 /**
  * Allow is_front to be used on other templates
@@ -106,11 +107,27 @@ function osh_preprocess_paragraph(&$variables) {
         $fid = $media->field_media_image[0]->getValue()['target_id'];
         $file = File::load($fid);
         if ($file) {
+          $image_uri = $file->getFileUri();
+          // Load the image style
+          $image_style = ImageStyle::load('medium');
+          // Create the image style URL
+          $image_url = $image_style->buildUrl($image_uri);
+
           $variables['item_for_carousel'][$key]['alt'] = $media->field_media_image[0]->getValue()['alt'];
-          $variables['item_for_carousel'][$key]['url'] = $file->createFileUrl();
+          $variables['item_for_carousel'][$key]['url'] = $image_url;
         }
       }
     }
+  }
+
+  if ($paragraph->getType() === 'cta_download' && !$paragraph->field_link_button->isEmpty()) {
+    $link = $paragraph->field_link_button->first();
+    $url = $link->getUrl()->toString();
+    $title = $link->title;
+    
+    // Pass the link data to the template.
+    $variables['link_url'] = $url;
+    $variables['link_title'] = $title;
   }
 }
 
@@ -182,6 +199,25 @@ function osh_preprocess_page(&$variables) {
       $path_segments = explode('/', trim($current_url, '/'));
       $variables['is_product_page'] = (isset($path_segments[0]) && $path_segments[0] === 'product');
     }
+    $current_user = \Drupal::currentUser();
+
+    // Add the user ID to the variables array
+    $user_id = $current_user->id();
+    $variables['user_id'] = $user_id;
+
+    // Add the user name to the variables array
+    $variables['user_name'] = $current_user->getDisplayName();
+
+    // User account paths array
+    $variables['user_paths'] = [
+      ['url' => "/user/{$user_id}", 'label' => 'Profile'],
+      ['url' => "/user/{$user_id}/payment-methods", 'label' => 'Payment Methods'],
+      ['url' => "/user/{$user_id}/edit", 'label' => 'Edit'],
+      ['url' => "/user/{$user_id}/orders", 'label' => 'Orders'],
+    ];
+
+    // Add the current path to the variables array
+    $variables['current_path'] = \Drupal::service('path.current')->getPath();
   }
 }
 
@@ -200,6 +236,11 @@ function osh_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state
       '#submit' => ['osh_go_to_cart_submit'],
       '#weight' => 0,
     ];
+  }
+
+  if (strpos($form_id, 'user_form') !== FALSE) {
+    $form['actions']['submit']['#attributes']['class'][] = 'btn';
+    $form['actions']['submit']['#attributes']['class'][] = 'btn-primary';
   }
 
   if (strpos($form_id, 'commerce_cart_form') !== FALSE) {

@@ -57,13 +57,32 @@
 }%}
 
 {{ page.messages }}
+
 <section {{ attributes.addClass(classes) }}>
 	<div class="login-entity-wrapper container_height py-3 py-md-5">
 		<div class="container">
+			{% if user_name %}
+				<div class="row">
+					<div class="col-sm-12">
+						<h2 class="text-center mb-3">{{ user_name }}</23>
+					</div>
+				</div>
+			{% endif %}
 			<div class="row justify-content-md-center">
-				<div class="col-12 col-md-11 col-lg-8 col-xl-7 col-xxl-6">
-					<div class="bg-white p-4 p-md-5 rounded shadow-sm">
-						{{ page.content }}
+				<div class="col-12">
+					<div class="bg-white p-4 rounded shadow-sm">
+						<div id="content">
+							<ul class="nav nav-tabs">
+								{% for path in user_paths %}
+									<li class="nav-item">
+										<a class="nav-link {% if path.url == current_path %}active{% endif %}" href="{{ path.url }}">{{ path.label }}</a>
+									</li>
+								{% endfor %}
+							</ul>
+							<div class="tab-content pt-2">
+								{{ page.content }}
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
