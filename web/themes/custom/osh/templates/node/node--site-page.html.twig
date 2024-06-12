@@ -68,17 +68,7 @@
 	{% endif %}
 {% else %}
     {% set title = elements['#title'] %}
-    <section class="banner-area" id="home">
-      <div class="container">
-        <div
-          class="row d-flex align-items-center justify-content-start"
-        >
-          <div class="banner-content col-lg">
-            {% if title %}
-                <h1 class="text-uppercase pt-60 pb-20">{{ title|striptags|replace({"\n": "", "\r": "", "\t": ""}) }}</h1>
-            {% endif %}
-          </div>
-        </div>
-      </div>
-    </section>
+	{% include "@osh/overrides/scaffolding/mini-header.twig" with {
+		'title': title,
+	}%}
 {% endif %}

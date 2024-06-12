@@ -171,3 +171,42 @@
   z-index: 1;
   height: 100%;
   width: 100%; }
+
+/* Common styles for image containers to ensure uniform height and aspect ratio */
+.image-container {
+  height: 200px; /* Set the fixed height for the image container */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.image-container img {
+  height: 100%;
+  width: auto;
+  object-fit: cover; /* Cover the container while maintaining aspect ratio */
+}
+
+/* Styles specific to the product cards */
+.single-product .part-1 {
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+}
+
+/* Styles specific to the slides */
+.card .card-img-top {
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+}
+
+.card {
+  border-radius: 15px;
+}
+
+.card-img-top {
+  height: 200px; /* Set the fixed height you want for the images */
+  width: 100%; /* Ensure the image takes up the full width of the container */
+  object-fit: cover; /* Cover the container while maintaining aspect ratio */
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+}
