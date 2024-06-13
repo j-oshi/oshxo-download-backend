@@ -9,6 +9,7 @@ use Drupal\commerce_product\Entity\Product;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Drupal\image\Entity\ImageStyle;
+use Drupal\commerce_price\Price;
 
 /**
  * Allow is_front to be used on other templates
@@ -181,8 +182,11 @@ function osh_preprocess_views_view_unformatted(&$variables) {
       if (!$product->get('variations')->isEmpty()) {
         foreach ($product->get('variations') as $variation_ref) {
           $variation = $variation_ref->entity;
+    
           if ($variation) {
-            $row['product_data']['variations'][] = $variation->get('price')->number;
+            $price = $variation->get('price')->first()->toPrice();
+            $formatted_price = \Drupal::service('commerce_price.currency_formatter')->format($price->getNumber(), $price->getCurrencyCode());
+            $row['product_data']['variations'][] = $formatted_price;
           }
         }
       }
