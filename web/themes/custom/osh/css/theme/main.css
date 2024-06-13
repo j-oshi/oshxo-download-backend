@@ -2303,7 +2303,7 @@ body.mobile-nav-active #mobile-nav-toggle {
   }
 
   .banner-content h1 {
-    margin-top: 60px !important;
+    margin-top: 40px !important;
   }
 }
 
@@ -2370,7 +2370,7 @@ body.mobile-nav-active #mobile-nav-toggle {
 
 @media (max-width: 800px) {
   .banner-right img {
-    width: 55%;
+    width: 90%;
     margin-right: auto !important;
     margin-left: auto !important;
     display: block;
@@ -3164,4 +3164,8 @@ footer > section:nth-of-type(2) {
   height: 100%;
   width: auto; /* Maintain aspect ratio */
   object-fit: cover; /* Cover the container while maintaining aspect ratio */
+}
+
+.hero-text {
+  font-size: 1.2rem;
 }
